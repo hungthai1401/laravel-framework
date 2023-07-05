@@ -2270,6 +2270,32 @@ trait ValidatesAttributes
     }
 
     /**
+     * Validate the attribute contains with a given substring.
+     *
+     * @param  string  $attribute
+     * @param  mixed  $value
+     * @param  array<int, int|string>  $parameters
+     * @return bool
+     */
+    public function validateContains($attribute, $value, $parameters)
+    {
+        return Str::contains($value, $parameters);
+    }
+
+    /**
+     * Validate the attribute does not contains with a given substring.
+     *
+     * @param  string  $attribute
+     * @param  mixed  $value
+     * @param  array<int, int|string>  $parameters
+     * @return bool
+     */
+    public function validateDoesntContains($attribute, $value, $parameters)
+    {
+        return ! Str::contains($value, $parameters);
+    }
+
+    /**
      * Validate that an attribute is a string.
      *
      * @param  string  $attribute
