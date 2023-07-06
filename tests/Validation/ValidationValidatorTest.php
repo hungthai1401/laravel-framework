@@ -2590,6 +2590,48 @@ class ValidationValidatorTest extends TestCase
         $this->assertFalse($v->passes());
     }
 
+    public function testValidateContains()
+    {
+        $trans = $this->getIlluminateArrayTranslator();
+        $trans->addLines(['validation.contains' => 'The :attribute must contains one of the following values :values'], 'en');
+        $v = new Validator($trans, ['x' => 'hello world'], ['x' => 'contains:hellos']);
+        $this->assertFalse($v->passes());
+        $this->assertSame('The x must contains one of the following values hellos', $v->messages()->first('x'));
+
+        $trans = $this->getIlluminateArrayTranslator();
+        $v = new Validator($trans, ['x' => 'hello world'], ['x' => 'contains:hello']);
+        $this->assertTrue($v->passes());
+
+        $trans = $this->getIlluminateArrayTranslator();
+        $v = new Validator($trans, ['x' => 'hello world'], ['x' => 'contains:world,hellos']);
+        $this->assertTrue($v->passes());
+    }
+
+    public function testValidateDoesntContains()
+    {
+        $trans = $this->getIlluminateArrayTranslator();
+        $v = new Validator($trans, ['x' => 'world hello'], ['x' => 'doesnt_contains:php']);
+        $this->assertTrue($v->passes());
+
+        $trans = $this->getIlluminateArrayTranslator();
+        $trans->addLines(['validation.doesnt_contains' => 'The :attribute must not contains one of the following values :values'], 'en');
+        $v = new Validator($trans, ['x' => 'hello world'], ['x' => 'doesnt_contains:world']);
+        $this->assertFalse($v->passes());
+        $this->assertSame('The x must not contains one of the following values world', $v->messages()->first('x'));
+
+        $trans = $this->getIlluminateArrayTranslator();
+        $trans->addLines(['validation.doesnt_contains' => 'The :attribute must not contains one of the following values :values'], 'en');
+        $v = new Validator($trans, ['x' => 'hello world'], ['x' => 'doesnt_contains:world,hello']);
+        $this->assertFalse($v->passes());
+        $this->assertSame('The x must not contains one of the following values world, hello', $v->messages()->first('x'));
+
+        $trans = $this->getIlluminateArrayTranslator();
+        $trans->addLines(['validation.doesnt_contains' => 'The :attribute must not contains one of the following values :values'], 'en');
+        $v = new Validator($trans, ['x' => 'hello world'], ['x' => 'doesnt_contains:worlds,hello']);
+        $this->assertFalse($v->passes());
+        $this->assertSame('The x must not contains one of the following values worlds, hello', $v->messages()->first('x'));
+    }
+
     public function testValidateString()
     {
         $trans = $this->getIlluminateArrayTranslator();
